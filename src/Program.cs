@@ -15,15 +15,15 @@ namespace FosterGame
             // Our Graphics Module (not Mandatory but required for drawing anything).
             App.Modules.Register<GL_Graphics>();
 
-            // Register our Custom Module, where we will run our own code.
-            App.Modules.Register<CustomModule>();
+            // Register our Game Module, where we will run our own code.
+            App.Modules.Register<GameModule>();
 
             // Start the Application with a single 1280x720 Window.
             App.Start("FosterPlatformer", 1280, 720);
         }
     }
 
-    public class CustomModule : Module
+    public class GameModule : Module
     {
         public readonly Batch2D Batcher = new Batch2D();
         public float Offset = 0f;
@@ -53,12 +53,16 @@ namespace FosterGame
             if (Offset > App.Window.Width) {
                 Offset = 0;
             }
+
+            if (App.Input.Keyboard.Pressed(Keys.Escape)) {
+                App.Exit();
+            }
         }
 
         private void Render(Window window)
         {
             // Clear the Window.
-            App.Graphics.Clear(window, Color.Black);
+            App.Graphics.Clear(window, Color.FromHexStringRGB("#6495ED"));
 
             // Clear the Batcher's data from the previous frame.
             // If you don't clear it, further calls will be added
