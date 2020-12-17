@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Foster\Framework\Foster.Framework.csproj" />
+        <ProjectReference Include="..\Foster\Platforms\GLFW\Foster.GLFW.csproj" />
+        <ProjectReference Include="..\Foster\Platforms\OpenGL\Foster.OpenGL.csproj" />
+    </ItemGroup>
+
+</Project>
