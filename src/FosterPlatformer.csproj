@@ -6,9 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Foster\Framework\Foster.Framework.csproj" />
-        <ProjectReference Include="..\Foster\Platforms\GLFW\Foster.GLFW.csproj" />
-        <ProjectReference Include="..\Foster\Platforms\OpenGL\Foster.OpenGL.csproj" />
+        <ProjectReference Include="..\libs\Foster\Framework\Foster.Framework.csproj" />
+        <ProjectReference Include="..\libs\Foster\Platforms\GLFW\Foster.GLFW.csproj" />
+        <ProjectReference Include="..\libs\Foster\Platforms\OpenGL\Foster.OpenGL.csproj" />
     </ItemGroup>
 
 </Project>
