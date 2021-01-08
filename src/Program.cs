@@ -3,7 +3,7 @@ using Foster.GLFW;
 using Foster.OpenGL;
 using System;
 
-namespace FosterGame
+namespace FosterPlatformer
 {
     class Program
     {
@@ -16,65 +16,10 @@ namespace FosterGame
             App.Modules.Register<GL_Graphics>();
 
             // Register our Game Module, where we will run our own code.
-            App.Modules.Register<GameModule>();
+            App.Modules.Register<Game>();
 
             // Start the Application with a single 1280x720 Window.
-            App.Start("FosterPlatformer", 1280, 720);
-        }
-    }
-
-    public class GameModule : Module
-    {
-        public readonly Batch2D Batcher = new Batch2D();
-        public float Offset = 0f;
-
-        // This is called when the Application has Started.
-        protected override void Startup()
-        {
-            // Add a Callback to the Primary Window's Render loop.
-            // By Default a single Window is created at startup
-            // Alternatively App.System.Windows has a list of all open windows.
-            App.Window.OnRender += Render;
-        }
-
-        // This is called when the Application is shutting down
-        // (or when the Module is removed).
-        protected override void Shutdown()
-        {
-            // Remove our Callback
-            App.Window.OnRender -= Render;
-        }
-
-        // This is called every frame of the Application.
-        protected override void Update()
-        {
-            Offset += 32 * Time.Delta;
-
-            if (Offset > App.Window.Width) {
-                Offset = 0;
-            }
-
-            if (App.Input.Keyboard.Pressed(Keys.Escape)) {
-                App.Exit();
-            }
-        }
-
-        private void Render(Window window)
-        {
-            // Clear the Window.
-            App.Graphics.Clear(window, Color.FromHexStringRGB("#6495ED"));
-
-            // Clear the Batcher's data from the previous frame.
-            // If you don't clear it, further calls will be added
-            // to the batcher, which will eventually create huge
-            // amounts of data.
-            Batcher.Clear();
-
-            // Draw a rectangle.
-            Batcher.Rect(Offset, 0, 32, 32, Color.Red);
-
-            // Draw the batcher to the Window.
-            Batcher.Render(window);
+            App.Start("Sword II: Adventure of Frog (Foster Port)", 1280, 720);
         }
     }
 }
