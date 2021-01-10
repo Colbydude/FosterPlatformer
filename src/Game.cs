@@ -1,6 +1,7 @@
 using Foster.Framework;
 using FosterPlatformer.Extensions;
 using System;
+using System.Diagnostics;
 using System.Numerics;
 
 namespace FosterPlatformer
@@ -8,7 +9,7 @@ namespace FosterPlatformer
     public class Game : Module
     {
         public static readonly int Width = 240;
-        public static readonly int Height = 135;
+        public static readonly int Height = 136;
         public static readonly int TileWidth = 8;
         public static readonly int TileHeight = 8;
         public static readonly int Columns = Width / TileWidth;
@@ -47,7 +48,7 @@ namespace FosterPlatformer
             // world.game = this;
 
             // Load content.
-            // Content.Load();
+            Content.Load();
 
             // Set batcher to use Nearest Filter.
             Texture.DefaultTextureFilter = TextureFilter.Nearest;
@@ -66,6 +67,10 @@ namespace FosterPlatformer
         //
         public void LoadRoom(Point2 cell, bool isReload = false)
         {
+            Bitmap grid = Content.FindRoom(cell);
+            Debug.Assert(grid != null, "Room doesn't exist!");
+            Room = cell;
+
             // @TODO
         }
 
