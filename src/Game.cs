@@ -85,8 +85,8 @@ namespace FosterPlatformer
             // Make the floor.
             var floor = world.AddEntity(offset);
             var tilemap = floor.Add<Tilemap>(new Tilemap(8, 8, Columns, Rows));
-            // var solids = floor.Add<Collider>(Collider.MakeGrid(8, 40, 23));
-            // solids.Mask = Make.Solid;
+            var solids = floor.Add<Collider>(Collider.MakeGrid(8, 40, 23));
+            solids.Mask = Mask.Solid;
 
             // Loop over the room grid.
             for (int x = 0; x < Columns; x++)
@@ -107,13 +107,13 @@ namespace FosterPlatformer
                         // Castle tiles.
                         case 0xffffff:
                             tilemap.SetCell(x, y, castle.RandomTile());
-                            //solids.SetCell(x, y, true);
+                            solids.SetCell(x, y, true);
                         break;
 
                         // Grass tiles.
                         case 0x8f974a:
                             tilemap.SetCell(x, y, grass.RandomTile());
-                            //solids.SetCell(x, y, true);
+                            solids.SetCell(x, y, true);
                         break;
 
                         // Plants tiles.
@@ -129,7 +129,9 @@ namespace FosterPlatformer
                         // Jumpthru tiles.
                         case 0xdf7126:
                             tilemap.SetCell(x, y, jumpthrus.RandomTile());
-                            // @TODO
+                            var jumpthruEn = world.AddEntity(offset + new Point2(x * TileWidth, y * TileHeight));
+                            var jumpthruCol = jumpthruEn.Add<Collider>(Collider.MakeRect(new RectInt(0, 0, 8, 4)));
+                            jumpthruCol.Mask = Mask.Jumpthru;
                         break;
 
                         // Player (only if it doesn't already exist)
@@ -240,7 +242,12 @@ namespace FosterPlatformer
 
             // Draw debug colliders.
             if (drawColliders) {
-                // @TODO
+                var collider = world.First<Collider>();
+
+                while (collider != null) {
+                    collider.Render(Batch);
+                    collider = (Collider) collider.Next;
+                }
             }
 
             // End camera offset.

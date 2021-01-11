@@ -9,25 +9,7 @@ namespace FosterPlatformer
         public bool Active = true;
         public bool Visible = true;
         public int Depth = 0;
-        public int Type = 0;
         public Entity Entity = null;
-
-        public class Types
-        {
-            private static int counter = 0;
-
-            public static int Count()
-            {
-                return counter;
-            }
-
-            public static int Id<T>()
-            {
-                int value = counter++;
-
-                return value;
-            }
-        }
 
         /// <summary>
         /// Get the component of type T off of the entity.
@@ -48,6 +30,14 @@ namespace FosterPlatformer
             if (Entity != null && Entity.World != null) {
                 Entity.World.Destroy(this);
             }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public World World()
+        {
+            return Entity != null ? Entity.World : null;
         }
 
         /// <summary>

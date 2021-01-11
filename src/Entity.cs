@@ -34,7 +34,7 @@ namespace FosterPlatformer
             Debug.Assert(World != null, "Entity must be assigned to a World.");
 
             foreach (var it in Components)
-                if (it.Type == Component.Types.Id<T>())
+                if (it.GetType() == typeof(T))
                     return (T) it;
 
             return null;
