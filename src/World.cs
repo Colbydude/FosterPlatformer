@@ -119,6 +119,14 @@ namespace FosterPlatformer
             var cache = componentsCache[type];
             var alive = componentsAlive[type];
 
+            if (cache == null) {
+                componentsCache[type] = cache = new Pool<Component>();
+            }
+
+            if (alive == null) {
+                componentsAlive[type] = alive = new Pool<Component>();
+            }
+
             // Instantiate a new instance.
             T instance;
             if (cache.First != null) {

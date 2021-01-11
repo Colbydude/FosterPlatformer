@@ -1,4 +1,5 @@
 using Foster.Framework;
+using FosterPlatformer.Components;
 using FosterPlatformer.Extensions;
 using System;
 using System.Diagnostics;
@@ -28,14 +29,13 @@ namespace FosterPlatformer
 
         private bool drawColliders;
         private bool transition = false;
+        private const float transitionDuration = 0.4f;
         private float nextEase;
-        private Point2 nextRoom;
-        private Point2 lastRoom;
+        private Point2 nextRoom = new Point2(0, 0);
+        private Point2 lastRoom = new Point2(0, 0);
         // Vector<Entity> lastEntities;
         private Point2 shake;
         private float shakeTimer = 0;
-
-        private Point2 playerPosition = new Point2(0, 0);
 
         // This is called when the Application has Started.
         protected override void Startup()
@@ -83,7 +83,63 @@ namespace FosterPlatformer
             var jumpthrus = Content.FindTileset("jumpthru");
 
             // Make the floor.
-            // var floor = world.AddEntity(offset);
+            var floor = world.AddEntity(offset);
+            var tilemap = floor.Add<Tilemap>(new Tilemap(8, 8, Columns, Rows));
+            // var solids = floor.Add<Collider>(Collider.MakeGrid(8, 40, 23));
+            // solids.Mask = Make.Solid;
+
+            // Loop over the room grid.
+            for (int x = 0; x < Columns; x++)
+                for (int y = 0; y < Rows; y++)
+                {
+                    Point2 worldPosition = offset + new Point2(x * TileWidth, y * TileHeight) + new Point2(TileWidth / 2, TileHeight);
+                    Color col = grid.Pixels[x + y * Columns];
+                    UInt32 rgb =
+                        ((UInt32)col.R << 16) |
+                        ((UInt32)col.G << 8) |
+                        ((UInt32)col.B);
+
+                    switch (rgb) {
+                        // Black does nothing.
+                        case 0x000000:
+                        break;
+
+                        // Castle tiles.
+                        case 0xffffff:
+                            tilemap.SetCell(x, y, castle.RandomTile());
+                            //solids.SetCell(x, y, true);
+                        break;
+
+                        // Grass tiles.
+                        case 0x8f974a:
+                            tilemap.SetCell(x, y, grass.RandomTile());
+                            //solids.SetCell(x, y, true);
+                        break;
+
+                        // Plants tiles.
+                        case 0x4b692f:
+                            tilemap.SetCell(x, y, plants.RandomTile());
+                        break;
+
+                        // Back tiles.
+                        case 0x45283c:
+                            tilemap.SetCell(x, y, backs.RandomTile());
+                        break;
+
+                        // Jumpthru tiles.
+                        case 0xdf7126:
+                            tilemap.SetCell(x, y, jumpthrus.RandomTile());
+                            // @TODO
+                        break;
+
+                        // Player (only if it doesn't already exist)
+                        case 0x6abe30:
+                            // @TODO
+                        break;
+
+                        // @TODO: Remaining entities.
+                    }
+                }
         }
 
         // This is called when the Application is shutting down
@@ -126,23 +182,47 @@ namespace FosterPlatformer
                 App.Exit();
             }
 
-            // @TEMP
-            if (App.Input.Keyboard.Down(Keys.Up))
-                playerPosition.Y -= 1;
-            if (App.Input.Keyboard.Down(Keys.Down))
-                playerPosition.Y += 1;
-            if (App.Input.Keyboard.Down(Keys.Left))
-                playerPosition.X -= 1;
-            if (App.Input.Keyboard.Down(Keys.Right))
-                playerPosition.X += 1;
-
             // Normal Update
             if (!transition) {
-                // @TODO
+                // Screen shake.
+                shakeTimer -= Time.Delta;
+
+                if (shakeTimer > 0) {
+                    if (Time.OnInterval(0.05f)) {
+                        // @TODO
+                    }
+                }
+                else
+                    shake = Point2.Zero;
+
+                // Update objects.
+                world.Update();
             }
             // Room Transition routine
             else {
-                // @TODO
+                // Increment ease.
+                nextEase = Calc.Approach(nextEase, 1.0f, Time.Delta / transitionDuration);
+
+                // Get last and next camera position.
+                var lastCam = new Vector2(lastRoom.X * Width, lastRoom.Y * Height);
+                var nextCam = new Vector2(nextRoom.X * Width, nextRoom.Y * Height);
+
+                // LERP camera position.
+                Camera = lastCam + (nextCam - lastCam) * Ease.CubeInOut(nextEase);
+
+                // Finish transition.
+                if (nextEase >= 1.0f) {
+                    // Boost player on vertical up rooms.
+                    if (nextRoom.Y < lastRoom.Y) {
+                        // @TODO
+                    }
+
+                    // Delete old objects (except player!)
+                    // @TODO
+
+                    // Time.PauseFor(0.1f);
+                    transition = false;
+                }
             }
         }
 
@@ -156,9 +236,7 @@ namespace FosterPlatformer
             Batch.PushMatrix(Matrix3x2.CreateTranslation(-Camera + shake));
 
             // Draw gameplay objects.
-            // world.render(Batch);
-            // @TEMP
-            Batch.Rect(playerPosition.X, playerPosition.Y, 16, 16, Color.Red);
+            world.Render(Batch);
 
             // Draw debug colliders.
             if (drawColliders) {

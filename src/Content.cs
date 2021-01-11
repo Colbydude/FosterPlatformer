@@ -80,7 +80,7 @@ namespace FosterPlatformer
 
                 SpriteInfo info = new SpriteInfo();
                 info.Aseprite = new Aseprite(it);
-                info.Name = it.Substring(0, it.Length - 4);
+                info.Name = System.IO.Path.GetFileNameWithoutExtension(it);
                 info.PackIndex = packIndex;
 
                 foreach (var frame in info.Aseprite.Frames) {
@@ -105,7 +105,7 @@ namespace FosterPlatformer
 
                 SpriteInfo info = new SpriteInfo();
                 info.Aseprite = new Aseprite(it);
-                info.Name = it.Substring(0, it.Length - 4);
+                info.Name = System.IO.Path.GetFileNameWithoutExtension(it);
                 info.PackIndex = packIndex;
 
                 var frame = info.Aseprite.Frames[0];
@@ -120,6 +120,8 @@ namespace FosterPlatformer
                         packIndex++;
                     }
                 }
+
+                tilesetInfo.Add(info);
             }
 
             #endregion
@@ -179,6 +181,8 @@ namespace FosterPlatformer
                         i++;
                     }
                 }
+
+                Tilesets.Add(tileset);
             }
 
             #endregion

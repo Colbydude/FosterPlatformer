@@ -18,7 +18,7 @@ namespace FosterPlatformer.Assets
         /// </summary>
         public Subtexture RandomTile()
         {
-            return Rand.Instance.Choose<Subtexture>(Tiles);
+            return Tiles[Rand.Instance.Next(Columns * Rows)];
         }
     }
 }
