@@ -136,7 +136,8 @@ namespace FosterPlatformer
 
                         // Player (only if it doesn't already exist)
                         case 0x6abe30:
-                            // @TODO
+                            if (world.First<Player>() == null)
+                                Factory.Player(world, worldPosition + (isReload ? new Point2(0, -16) : Point2.Zero));
                         break;
 
                         // @TODO: Remaining entities.

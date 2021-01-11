@@ -155,7 +155,12 @@ namespace FosterPlatformer
         public T First<T>() where T : Component
         {
             Type type = typeof(T);
-            return (T) componentsAlive[type].First;
+            Pool<Component> pool = componentsAlive.GetValueOrDefault(type, null);
+
+            if (pool == null)
+                return null;
+
+            return (T) pool.First;
         }
 
         /// <summary>
@@ -166,7 +171,12 @@ namespace FosterPlatformer
         public T Last<T>() where T : Component
         {
             Type type = typeof(T);
-            return (T) componentsAlive[type].Last;
+            Pool<Component> pool = componentsAlive.GetValueOrDefault(type, null);
+
+            if (pool == null)
+                return null;
+
+            return (T) pool.Last;
         }
 
         /// <summary>
