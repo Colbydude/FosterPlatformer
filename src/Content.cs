@@ -28,7 +28,6 @@ namespace FosterPlatformer
         private static string Root = "";
         private static List<Sprite> Sprites = new List<Sprite>();
         private static List<Tileset> Tilesets = new List<Tileset>();
-        private static List<Subtexture> Subtextures = new List<Subtexture>();
         private static List<RoomInfo> Rooms = new List<RoomInfo>();
         private static Atlas SpriteAtlas;
 

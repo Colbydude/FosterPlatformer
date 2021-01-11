@@ -19,7 +19,7 @@ namespace FosterPlatformer
         public static readonly string Controls = "arrow keys + X / C\nstick + A / X";
         public static readonly string Ending = "YOU SAVED POND\nAND YOU ARE\nA REAL HERO";
 
-        // public World world;
+        public World world;
         public FrameBuffer Buffer;
         public Batch2D Batch = new Batch2D();
         public Point2 Room;
@@ -45,7 +45,8 @@ namespace FosterPlatformer
             // Alternatively App.System.Windows has a list of all open windows.
             App.Window.OnRender += Render;
 
-            // world.game = this;
+            world = new World();
+            world.game = this;
 
             // Load content.
             Content.Load();
@@ -71,7 +72,18 @@ namespace FosterPlatformer
             Debug.Assert(grid != null, "Room doesn't exist!");
             Room = cell;
 
-            // @TODO
+            // Get room offset.
+            Point2 offset = new Point2(cell.X * Width, cell.Y * Height);
+
+            // Get the castle tileset for now.
+            var castle = Content.FindTileset("castle");
+            var grass = Content.FindTileset("grass");
+            var plants = Content.FindTileset("plants");
+            var backs = Content.FindTileset("back");
+            var jumpthrus = Content.FindTileset("jumpthru");
+
+            // Make the floor.
+            // var floor = world.AddEntity(offset);
         }
 
         // This is called when the Application is shutting down
