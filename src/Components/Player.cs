@@ -192,7 +192,7 @@ namespace FosterPlatformer.Components
 
             // Variable jumping.
             if (jumpTimer > 0) {
-                mover.Speed.Y = -100;
+                mover.Speed.Y = -125;
                 jumpTimer -= Time.Delta;
 
                 if (InputJump.Down)

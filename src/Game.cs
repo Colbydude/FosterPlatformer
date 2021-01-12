@@ -2,6 +2,7 @@ using Foster.Framework;
 using FosterPlatformer.Components;
 using FosterPlatformer.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 
@@ -17,8 +18,8 @@ namespace FosterPlatformer
         public static readonly int Rows = Height / TileHeight;
 
         public static readonly string Title = "SWORD II: ADVENTURE OF FROG";
-        public static readonly string Controls = "arrow keys + X / C\nstick + A / X";
-        public static readonly string Ending = "YOU SAVED POND\nAND YOU ARE\nA REAL HERO";
+        public static readonly string Controls = "arrow keys + X / C\n\nstick + A / X";
+        public static readonly string Ending = "YOU SAVED POND\n\nAND YOU ARE\n\nA REAL HERO";
 
         public World world;
         public FrameBuffer Buffer;
@@ -33,7 +34,7 @@ namespace FosterPlatformer
         private float nextEase;
         private Point2 nextRoom = new Point2(0, 0);
         private Point2 lastRoom = new Point2(0, 0);
-        // Vector<Entity> lastEntities;
+        private List<Entity> lastEntities = new List<Entity>();
         private Point2 shake;
         private float shakeTimer = 0;
 
@@ -202,6 +203,71 @@ namespace FosterPlatformer
 
                 // Update objects.
                 world.Update();
+
+                // Check for transition / death.
+                var player = world.First<Player>();
+                if (player != null) {
+                    var pos = player.Entity.Position;
+                    var bounds = new RectInt(Room.X * Width, Room.Y * Height, Width, Height);
+
+                    if (!bounds.Contains(pos)) {
+                        // Target room.
+                        Point2 nextRoom = new Point2(pos.X / Width, pos.Y / Height);
+                        if (pos.X < 0) nextRoom.X--;
+                        if (pos.Y < 0) nextRoom.Y--;
+
+                        // See if room exists.
+                        if (player.Health > 0 && Content.FindRoom(nextRoom) != null && nextRoom.X >= Room.X) {
+                            // Time.PauseFor(0.1f);
+
+                            // Transition to it!
+                            transition = true;
+                            nextEase = 0;
+                            this.nextRoom = nextRoom;
+                            lastRoom = Room;
+
+                            // Store entities from the previous room.
+                            lastEntities.Clear();
+                            Entity e = world.FirstEntity();
+
+                            while (e != null) {
+                                lastEntities.Add(e);
+                                e = (Entity) e.Next;
+                            }
+
+                            // Load contents of the next room.
+                            LoadRoom(nextRoom);
+                        }
+                        // Doesn't exist, clamp player.
+                        else {
+                            player.Entity.Position = new Point2(
+                                Calc.Clamp(pos.X, bounds.X, bounds.X + bounds.Width),
+                                Calc.Clamp(pos.Y, bounds.Y, bounds.Y + bounds.Height + 100)
+                            );
+
+                            // Reload if they fell out the bottom.
+                            if (player.Entity.Position.Y > bounds.Y + bounds.Height + 64) {
+                                world.Clear();
+                                LoadRoom(Room, true);
+                            }
+                        }
+                    }
+
+                    // Death ... delete everything except the player
+                    // then when they fall ut of the screen, we reset.
+                    if (player.Health <= 0) {
+                        Entity e = world.FirstEntity();
+
+                        while (e != null) {
+                            Entity next = (Entity) e.Next;
+
+                            if (e.Get<Player>() == null)
+                                world.DestroyEntity(e);
+
+                            e = next;
+                        }
+                    }
+                }
             }
             // Room Transition routine
             else {
@@ -226,7 +292,10 @@ namespace FosterPlatformer
                     }
 
                     // Delete old objects (except player!)
-                    // @TODO
+                    foreach (Entity it in lastEntities) {
+                        if (it.Get<Player>() == null)
+                            world.DestroyEntity(it);
+                    }
 
                     // Time.PauseFor(0.1f);
                     transition = false;
@@ -256,6 +325,25 @@ namespace FosterPlatformer
                 }
             }
 
+            // Hacky start / end screen text.
+            if (Room == new Point2(0, 0) || lastRoom == new Point2(0, 0)) {
+                var w = Content.Font.WidthOf(Title);
+                var pos = new Point2((Width - (int) w) / 2, 20);
+                Batch.Text(Content.Font, Title, pos + new Point2(0, 1), Color.Black);
+                Batch.Text(Content.Font, Title, pos, Color.White);
+
+                w = Content.Font.WidthOf(Controls);
+                pos.X = (Width - (int) w) / 2;
+                pos.Y += 20;
+                Batch.Text(Content.Font, Controls, pos, Color.White * 0.25f);
+            }
+            else if (Room == new Point2(13, 0)) {
+                var w = Content.Font.WidthOf(Ending);
+                var pos = new Point2(Room.X * Width + Width / 2, Room.Y * Height + 20);
+                Batch.Text(Content.Font, Ending, pos + new Point2(0, 1), Color.Black);
+                Batch.Text(Content.Font, Ending, pos, Color.White);
+            }
+
             // End camera offset.
             Batch.PopMatrix();
 
@@ -278,6 +366,14 @@ namespace FosterPlatformer
 
                     pos.X += 12;
                 }
+            }
+
+            // Draw FPS.
+            if (drawColliders) {
+                var fpsText = "FPS: " + Time.FPS;
+                var w = Content.Font.WidthOf(fpsText);
+                var pos = new Point2((Width - (int)w) - 5, 5);
+                Batch.Text(Content.Font, fpsText, pos, Color.White);
             }
 
             // Draw the gameplay buffer.

@@ -268,8 +268,8 @@ namespace FosterPlatformer
 
             // Sort by depth.
             visible.Sort((Component a, Component b) => {
-                if (a.Depth > b.Depth) return 1;
-                else if (a.Depth < b.Depth) return -1;
+                if (a.Depth > b.Depth) return -1;
+                else if (a.Depth < b.Depth) return 1;
                 return 0;
             });
 

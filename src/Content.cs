@@ -30,6 +30,7 @@ namespace FosterPlatformer
         private static List<Tileset> Tilesets = new List<Tileset>();
         private static List<RoomInfo> Rooms = new List<RoomInfo>();
         private static Atlas SpriteAtlas;
+        private static string ASCII = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
         /// <summary>
         ///
@@ -63,7 +64,7 @@ namespace FosterPlatformer
             packer.Padding = 0;
 
             // Load the main font.
-            Font = new SpriteFont(Path() + "fonts/dogica.ttf", 8, "abcdefghijklmnopqrstuvwxyz"); // @TODO Revisit charset.
+            Font = new SpriteFont(Path() + "fonts/dogica.ttf", 6, ASCII, TextureFilter.Nearest);
             Font.LineGap = 4;
 
             int packIndex = 0;
