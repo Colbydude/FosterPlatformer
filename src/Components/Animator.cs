@@ -28,7 +28,7 @@ namespace FosterPlatformer
             return sprite;
         }
 
-        public Sprite.Animation? Animation()
+        public Sprite.Animation Animation()
         {
             if (sprite != null && animationIndex >= 0 && animationIndex < sprite.Animations.Count)
                 return sprite.Animations[animationIndex];

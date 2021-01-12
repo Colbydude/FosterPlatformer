@@ -13,7 +13,7 @@ namespace FosterPlatformer.Assets
             public float Duration;
         }
 
-        public struct Animation
+        public class Animation
         {
             public string Name;
             public List<Frame> Frames;
@@ -35,7 +35,7 @@ namespace FosterPlatformer.Assets
         ///
         /// </summary>
         /// <param name="name"></param>
-        public Animation? GetAnimation(string name)
+        public Animation GetAnimation(string name)
         {
             foreach (Animation it in Animations)
                 if (it.Name == name)

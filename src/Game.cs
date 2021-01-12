@@ -89,7 +89,7 @@ namespace FosterPlatformer
             solids.Mask = Mask.Solid;
 
             // Loop over the room grid.
-            for (int x = 0; x < Columns; x++)
+            for (int x = 0; x < Columns; x++) {
                 for (int y = 0; y < Rows; y++)
                 {
                     Point2 worldPosition = offset + new Point2(x * TileWidth, y * TileHeight) + new Point2(TileWidth / 2, TileHeight);
@@ -143,6 +143,7 @@ namespace FosterPlatformer
                         // @TODO: Remaining entities.
                     }
                 }
+            }
         }
 
         // This is called when the Application is shutting down
@@ -164,14 +165,14 @@ namespace FosterPlatformer
             // Reload current room.
             if (App.Input.Keyboard.Pressed(Keys.F2)) {
                 transition = false;
-                // world.clear();
+                world.Clear();
                 LoadRoom(Room);
             }
 
             // Reload first room.
             if (App.Input.Keyboard.Pressed(Keys.F9)) {
                 transition = false;
-                // world.clear();
+                world.Clear();
                 LoadRoom(new Point2(0, 0));
             }
 
@@ -192,7 +193,8 @@ namespace FosterPlatformer
 
                 if (shakeTimer > 0) {
                     if (Time.OnInterval(0.05f)) {
-                        // @TODO
+                        shake.X = Rand.Instance.Next(0, 2) == 0 ? -1 : 1;
+                        shake.Y = Rand.Instance.Next(0, 2) == 0 ? -1 : 1;
                     }
                 }
                 else
@@ -217,7 +219,10 @@ namespace FosterPlatformer
                 if (nextEase >= 1.0f) {
                     // Boost player on vertical up rooms.
                     if (nextRoom.Y < lastRoom.Y) {
-                        // @TODO
+                        var player = world.First<Player>();
+
+                        if (player != null)
+                            player.Get<Mover>().Speed = new Vector2(0, -150);
                     }
 
                     // Delete old objects (except player!)
@@ -255,7 +260,25 @@ namespace FosterPlatformer
             Batch.PopMatrix();
 
             // Draw the health.
-            // @TODO
+            var player = world.First<Player>();
+
+            if (player != null) {
+                var hearts = Content.FindSprite("heart");
+                var full = hearts.GetAnimation("full");
+                var empty = hearts.GetAnimation("empty");
+
+                Point2 pos = new Point2(0, Height - 16);
+                Batch.Rect(new Rect(pos.X, pos.Y + 7, 40, 4), Color.Black);
+
+                for (int i = 0; i < Player.MAX_HEALTH; i++) {
+                    if (player.Health >= i + 1)
+                        Batch.Image(full.Frames[0].Image, pos, Color.White);
+                    else
+                        Batch.Image(empty.Frames[0].Image, pos, Color.White);
+
+                    pos.X += 12;
+                }
+            }
 
             // Draw the gameplay buffer.
             Batch.Render(Buffer);

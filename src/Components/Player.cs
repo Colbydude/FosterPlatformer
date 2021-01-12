@@ -21,11 +21,11 @@ namespace FosterPlatformer.Components
         private int state = ST_START;
         private int facing = 1;
         private float jumpTimer = 0;
-        // private float attackTimer = 0;
-        // private float hurtTimer = 0;
-        // private float invincibleTimer = 0;
+        private float attackTimer = 0;
+        private float hurtTimer = 0;
+        private float invincibleTimer = 0;
         private float startTimer = 1;
-        // private Collider attackCollider = null;
+        private Collider attackCollider = null;
         private bool onGround = false;
 
         private float maxGroundSpeed = 60;
@@ -33,11 +33,11 @@ namespace FosterPlatformer.Components
         private float groundAccel = 500;
         private float airAccel = 20;
         private float friction = 800;
-        // private float hurtFriction = 200;
+        private float hurtFriction = 200;
         private float gravity = 450;
         private float jumpTime = 0.18f;
-        // private float hurtDuration = 0.5f;
-        // private float invincibleDuration = 1.5f;
+        private float hurtDuration = 0.5f;
+        private float invincibleDuration = 1.5f;
 
         public Player()
         {
@@ -127,18 +127,67 @@ namespace FosterPlatformer.Components
 
                 #endregion
 
+                // Invoke Jumping.
                 if (InputJump.Pressed && mover.OnGround()) {
                     // InputJump.ClearPressedBuffer(); ??
                     anim.Scale = new Vector2(facing * 0.65f, 1.4f);
                     mover.Speed.X = input * maxAirSpeed;
                     jumpTimer = jumpTime;
                 }
+
+                // Begin Attack.
+                if (InputAttack.Pressed) {
+                    // InputAttack.ClearPressBuffer(); ??
+
+                    state = ST_ATTACK;
+                    attackTimer = 0;
+
+                    if (attackCollider == null)
+                        attackCollider = Entity.Add<Collider>(Collider.MakeRect(new RectInt()));
+
+                    attackCollider.Mask = Mask.PlayerAttack;
+
+                    if (onGround)
+                        mover.Speed.X = 0;
+                }
             }
+            // ATTACK
             else if (state == ST_ATTACK) {
-                // @TODO
+                anim.Play("attack");
+                attackTimer += Time.Delta;
+
+                // Setup hitbox.
+                if (attackTimer < 0.2f) {
+                    attackCollider.SetRect(new RectInt(-16, -12, 16, 8));
+                }
+                else if (attackTimer < 0.5f) {
+                    attackCollider.SetRect(new RectInt(8, -8, 16, 8));
+                }
+                else if (attackCollider != null) {
+                    attackCollider.Destroy();
+                    attackCollider = null;
+                }
+
+                // Flip hitbox if you're facing left.
+                if (facing < 0 && attackCollider != null) {
+                    var rect = attackCollider.GetRect();
+                    rect.X = -(rect.X + rect.Width);
+                    attackCollider.SetRect(rect);
+                }
+
+                // End the attack.
+                if (attackTimer >= anim.Animation().Duration()) {
+                    anim.Play("idle");
+                    state = ST_NORMAL;
+                }
             }
             else if (state == ST_HURT) {
-                // @TODO
+                hurtTimer -= Time.Delta;
+
+                if (hurtTimer <= 0)
+                    state = ST_NORMAL;
+
+                mover.Speed.X = Calc.Approach(mover.Speed.X, 0, hurtFriction * Time.Delta);
             }
 
             // Variable jumping.
@@ -151,7 +200,15 @@ namespace FosterPlatformer.Components
             }
 
             // Invicible Timer.
-            // @TODO
+            if (state != ST_HURT && invincibleTimer > 0) {
+                if (Time.OnInterval(0.05f))
+                    anim.Visible = !anim.Visible;
+
+                invincibleTimer -= Time.Delta;
+
+                if (invincibleTimer <= 0)
+                    anim.Visible = true;
+            }
 
             // Gravity
             if (!onGround) {
@@ -161,6 +218,30 @@ namespace FosterPlatformer.Components
                     grav *= 0.4f;
 
                 mover.Speed.Y += grav * Time.Delta;
+            }
+
+            // Hurt Check!
+            if (invincibleTimer <= 0) {
+                var hit = hitbox.First(Mask.Enemy, new Point2(0, 0));
+
+                if (hit != null) {
+                    // Time.PauseFor(0.1f); ??
+                    anim.Play("hurt");
+
+                    if (attackCollider != null) {
+                        attackCollider.Destroy();
+                        attackCollider = null;
+                    }
+
+                    mover.Speed = new Vector2(-facing * 100, -80);
+
+                    Health--;
+                    hurtTimer = hurtDuration;
+                    invincibleTimer = invincibleDuration;
+                    state = ST_HURT;
+
+                    // @TODO ORB
+                }
             }
         }
     }

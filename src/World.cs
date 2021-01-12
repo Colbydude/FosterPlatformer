@@ -89,8 +89,8 @@ namespace FosterPlatformer
         {
             if (entity != null && entity.World == this) {
                 // Destroy components.
-                foreach (Component it in entity.Components)
-                    Destroy(it);
+                for (int i = entity.Components.Count - 1; i >= 0; i--)
+                    Destroy(entity.Components[i]);
 
                 // Remove ourselves from the list.
                 alive.Remove(entity);
@@ -193,9 +193,9 @@ namespace FosterPlatformer
 
                 // Remove from entity.
                 var list = component.Entity.Components;
-                foreach (Component it in list) {
-                    if (it == component) {
-                        list.Remove(it);
+                for (int i = list.Count - 1; i >= 0; i--) {
+                    if (list[i] == component) {
+                        list.Remove(list[i]);
                         break;
                     }
                 }
