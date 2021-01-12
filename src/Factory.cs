@@ -17,8 +17,8 @@ namespace FosterPlatformer
             var hitbox = en.Add<Collider>(Collider.MakeRect(new RectInt(-4, -12, 8, 12)));
             hitbox.Mask = Mask.Player;
 
-            // var mover = en.Add<Mover>(new Mover());
-            // mover.Collider = hitbox;
+            var mover = en.Add<Mover>(new Mover());
+            mover.Collider = hitbox;
 
             en.Add<Player>(new Player());
             return en;

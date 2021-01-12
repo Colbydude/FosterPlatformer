@@ -108,6 +108,8 @@ namespace FosterPlatformer
                         (other.Mask & mask) == mask &&
                         Overlaps(other, offset))
                         return other;
+
+                    other = (Collider) other.Next;
                 }
             }
 
