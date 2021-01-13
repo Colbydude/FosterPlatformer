@@ -4,17 +4,17 @@ using System.Numerics;
 
 namespace FosterPlatformer.Components
 {
-    public delegate void HitX(Mover mover);
-    public delegate void HitY(Mover mover);
-
     public class Mover : Component
     {
+        public delegate void HitXEvent(Mover mover);
+        public delegate void HitYEvent(Mover mover);
+
         public Collider Collider = null;
         public Vector2 Speed;
         public float Gravity = 0;
         public float Friction = 0;
-        public event HitX OnHitX;
-        public event HitY OnHitY;
+        public event HitXEvent OnHitX;
+        public event HitYEvent OnHitY;
 
         private Vector2 remainder;
 

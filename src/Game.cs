@@ -135,13 +135,23 @@ namespace FosterPlatformer
                             jumpthruCol.Mask = Mask.Jumpthru;
                         break;
 
-                        // Player (only if it doesn't already exist)
+                        // Player (only if it doesn't already exist).
                         case 0x6abe30:
                             if (world.First<Player>() == null)
                                 Factory.Player(world, worldPosition + (isReload ? new Point2(0, -16) : Point2.Zero));
                         break;
 
+                        // Brambles.
+                        case 0xd77bba:
+                            Factory.Bramble(world, worldPosition);
+                        break;
+
                         // @TODO: Remaining entities.
+
+                        // Ghost Frog.
+                        // case 0x76428a:
+                        //     Factory.GhostFrog(world, worldPosition + new Point2(-4, 0));
+                        // break;
                     }
                 }
             }

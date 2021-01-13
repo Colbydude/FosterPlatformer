@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Numerics;
 
-namespace FosterPlatformer
+namespace FosterPlatformer.Components
 {
     public class Animator : Component
     {

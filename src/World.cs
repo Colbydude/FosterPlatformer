@@ -2,7 +2,6 @@ using Foster.Framework;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace FosterPlatformer
 {
@@ -10,10 +9,8 @@ namespace FosterPlatformer
     {
         public static int MaxComponentTypes = 256;
 
-        private Pool<Entity> cache = new Pool<Entity>();
         private Pool<Entity> alive = new Pool<Entity>();
-        private Dictionary<Type, Pool<Component>> componentsCache = new Dictionary<Type, Pool<Component>>();
-        private Dictionary<Type, Pool<Component>> componentsAlive = new Dictionary<Type, Pool<Component>>();
+        private Pool<Component>[] componentsAlive = new Pool<Component>[MaxComponentTypes];
         private List<Component> visible = new List<Component>();
 
         // NOTE:
@@ -28,12 +25,6 @@ namespace FosterPlatformer
             // Destroy all the entities.
             while (alive.First != null)
                 DestroyEntity(alive.First);
-
-            // Delete component instances.
-            componentsCache.Clear();
-
-            // Delete entity instances.
-            cache = null;
         }
 
         /// <summary>
@@ -47,12 +38,7 @@ namespace FosterPlatformer
             // Create entity instance.
             Entity instance;
 
-            if (cache.First != null) {
-                instance = cache.First;
-                cache.Remove(instance);
-            } else {
-                instance = new Entity();
-            }
+            instance = new Entity();
 
             // Add to list.
             alive.Insert(instance);
@@ -94,7 +80,6 @@ namespace FosterPlatformer
 
                 // Remove ourselves from the list.
                 alive.Remove(entity);
-                cache.Insert(entity);
 
                 // Donezo.
                 entity.World = null;
@@ -113,39 +98,26 @@ namespace FosterPlatformer
             Debug.Assert(entity.World == this, "Entity must be part of this world.");
 
             // Get the component type.
-            Type type = typeof(T);
-            var cache = componentsCache.GetValueOrDefault(type, null);
-            var alive = componentsAlive.GetValueOrDefault(type, null);
-
-            if (cache == null) {
-                componentsCache[type] = cache = new Pool<Component>();
-            }
+            int typeId = Component.Types.Id<T>();
+            var alive = componentsAlive[typeId];
 
             if (alive == null) {
-                componentsAlive[type] = alive = new Pool<Component>();
+                componentsAlive[typeId] = alive = new Pool<Component>();
             }
 
-            // Instantiate a new instance.
-            T instance;
-            if (cache.First != null) {
-                instance = (T) cache.First;
-                cache.Remove(instance);
-            }
-
-            // Construct the new instance.
-            instance = component;
-            instance.Entity = entity;
+            component.Type = typeId;
+            component.Entity = entity;
 
             // Add it into the live components.
-            alive.Insert(instance);
+            alive.Insert(component);
 
             // Add it to the entity.
-            entity.Components.Add(instance);
+            entity.Components.Add(component);
 
             // and we're done!
-            instance.Awake();
+            component.Awake();
 
-            return instance;
+            return component;
         }
 
         /// <summary>
@@ -154,13 +126,8 @@ namespace FosterPlatformer
         /// <typeparam name="T"></typeparam>
         public T First<T>() where T : Component
         {
-            Type type = typeof(T);
-            Pool<Component> pool = componentsAlive.GetValueOrDefault(type, null);
-
-            if (pool == null)
-                return null;
-
-            return (T) pool.First;
+            int typeId = Component.Types.Id<T>();
+            return (T) componentsAlive[typeId]?.First;
         }
 
         /// <summary>
@@ -170,13 +137,8 @@ namespace FosterPlatformer
         /// <returns></returns>
         public T Last<T>() where T : Component
         {
-            Type type = typeof(T);
-            Pool<Component> pool = componentsAlive.GetValueOrDefault(type, null);
-
-            if (pool == null)
-                return null;
-
-            return (T) pool.Last;
+            int typeId = Component.Types.Id<T>();
+            return (T) componentsAlive[typeId]?.Last;
         }
 
         /// <summary>
@@ -186,7 +148,7 @@ namespace FosterPlatformer
         public void Destroy(Component component)
         {
             if (component != null && component.Entity != null && component.Entity.World == this) {
-                Type type = component.GetType();
+                int typeId = component.Type;
 
                 // Mark destroyed.
                 component.Destroyed();
@@ -201,8 +163,7 @@ namespace FosterPlatformer
                 }
 
                 // Remove from list.
-                componentsAlive[type].Remove(component);
-                componentsCache[type].Remove(component);
+                componentsAlive[typeId].Remove(component);
             }
         }
 
@@ -225,8 +186,8 @@ namespace FosterPlatformer
         /// </summary>
         public void Update()
         {
-            foreach (var pool in componentsAlive) {
-                var component = pool.Value.First;
+            for (int i = 0; i < Component.Types.Count(); i++) {
+                var component = componentsAlive[i].First;
 
                 while (component != null) {
                     var next = component.Next;
@@ -255,8 +216,8 @@ namespace FosterPlatformer
             // However, given the scope of this project, this is fine.
 
             // Assemble list.
-            foreach (var pool in componentsAlive) {
-                var component = pool.Value.First;
+            for (int i = 0; i < Component.Types.Count(); i++) {
+                var component = componentsAlive[i].First;
 
                 while (component != null) {
                     if (component.Visible && component.Entity.Visible)
