@@ -131,9 +131,63 @@ namespace FosterPlatformer
             return en;
         }
 
-        // @TODO Mosquito
+        public static Entity Mosquito(World world, Point2 position)
+        {
+            var en = world.AddEntity(position);
+            var mosquito = en.Add<Mosquito>(new Mosquito());
+            en.Add<Enemy>(new Enemy());
+
+            var anim = en.Add<Animator>(new Animator("mosquito"));
+            anim.Play("fly");
+            anim.Depth = -5;
+
+            var hitbox = en.Add<Collider>(Collider.MakeRect(new RectInt(-4, -4, 8, 8)));
+            hitbox.Mask = Mask.Enemy;
+
+            en.Add<Mover>(new Mover());
+
+            var hurtable = en.Add<Hurtable>(new Hurtable());
+            hurtable.HurtBy = Mask.PlayerAttack;
+            hurtable.Collider = hitbox;
+            hurtable.OnHurt += (Hurtable self) => { self.Get<Mosquito>().Hurt(); };
+
+            return en;
+        }
+
+
         // @TODO Door
-        // @TODO Blob
+
+        public static Entity Blob(World world, Point2 position)
+        {
+            var en = world.AddEntity(position);
+            en.Add<Blob>(new Blob());
+            en.Add<Enemy>(new Enemy());
+
+            var anim = en.Add<Animator>(new Animator("blob"));
+            anim.Play("idle");
+            anim.Depth = -5;
+
+            var hitbox = en.Add<Collider>(Collider.MakeRect(new RectInt(-4, -8, 8, 8)));
+            hitbox.Mask = Mask.Enemy;
+
+            var mover = en.Add<Mover>(new Mover());
+            mover.Collider = hitbox;
+            mover.Gravity = 300;
+            mover.Friction = 400;
+            mover.OnHitY += (Mover self) => {
+                self.Get<Animator>().Play("idle");
+                self.StopY();
+            };
+
+            en.Add<Timer>(new Timer(2.0f, (Timer self) => { self.Get<Blob>().Jump(self); } ));
+
+            var hurtable = en.Add<Hurtable>(new Hurtable());
+            hurtable.HurtBy = Mask.PlayerAttack;
+            hurtable.Collider = hitbox;
+            hurtable.OnHurt += (Hurtable self) => { self.Get<Blob>().Hurt(); };
+
+            return en;
+        }
 
         public static Entity GhostFrog(World world, Point2 position)
         {
