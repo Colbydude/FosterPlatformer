@@ -146,7 +146,30 @@ namespace FosterPlatformer
                             Factory.Bramble(world, worldPosition);
                         break;
 
-                        // @TODO: Remaining entities.
+                        // Spitter Plat.
+                        case 0xac3232:
+                            Factory.Spitter(world, worldPosition);
+                        break;
+
+                        // // Mosquito.
+                        // case 0xfbf236:
+                        //     Factory.Mosquito(world, worldPosition);
+                        // break;
+
+                        // // Door.
+                        // case 0x9badb7:
+                        //     Factory.Door(world, worldPosition);
+                        // break;
+
+                        // // Closing Door.
+                        // case 0x847e87:
+                        //     Factory.Door(world, worldPosition, !isReload);
+                        // break;
+
+                        // // Blob.
+                        // case 0x3f3f74:
+                        //     Factory.Blob(world, worldPosition);
+                        // break;
 
                         // Ghost Frog.
                         case 0x76428a:
