@@ -156,15 +156,15 @@ namespace FosterPlatformer
                             Factory.Mosquito(world, worldPosition);
                         break;
 
-                        // // Door.
-                        // case 0x9badb7:
-                        //     Factory.Door(world, worldPosition);
-                        // break;
+                        // Door.
+                        case 0x9badb7:
+                            Factory.Door(world, worldPosition);
+                        break;
 
-                        // // Closing Door.
-                        // case 0x847e87:
-                        //     Factory.Door(world, worldPosition, !isReload);
-                        // break;
+                        // Closing Door.
+                        case 0x847e87:
+                            Factory.Door(world, worldPosition, !isReload);
+                        break;
 
                         // Blob.
                         case 0x3f3f74:

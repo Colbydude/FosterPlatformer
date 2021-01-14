@@ -154,8 +154,29 @@ namespace FosterPlatformer
             return en;
         }
 
+        public static void MakeDoorContents(Entity en)
+        {
+            var anim = en.Add<Animator>(new Animator("door"));
+            anim.Play("idle");
+            anim.Depth = -1;
 
-        // @TODO Door
+            var hitbox = en.Add<Collider>(Collider.MakeRect(new RectInt(-6, -16, 12, 16)));
+            hitbox.Mask = Mask.Solid;
+        }
+
+        public static Entity Door(World world, Point2 position, bool waitForPlayer = false)
+        {
+            var en = world.AddEntity(position);
+            var door = en.Add<Door>(new Door());
+            door.Waiting = waitForPlayer;
+
+            if (!waitForPlayer)
+                MakeDoorContents(en);
+
+            en.Add<Timer>(new Timer(0.25f, (Timer self) => { self.Get<Door>().Lock(self); }));
+
+            return en;
+        }
 
         public static Entity Blob(World world, Point2 position)
         {
