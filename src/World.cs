@@ -18,7 +18,7 @@ namespace FosterPlatformer
         // just so that the boss could tell the game to shake the screen.
         // Ideally I think there should be a Camera component that handles
         // that instead.
-        public Game game;
+        public Game Game;
 
         ~World()
         {
@@ -187,7 +187,7 @@ namespace FosterPlatformer
         public void Update()
         {
             for (int i = 0; i < Component.Types.Count(); i++) {
-                var component = componentsAlive[i].First;
+                var component = componentsAlive[i]?.First;
 
                 while (component != null) {
                     var next = component.Next;
@@ -217,7 +217,7 @@ namespace FosterPlatformer
 
             // Assemble list.
             for (int i = 0; i < Component.Types.Count(); i++) {
-                var component = componentsAlive[i].First;
+                var component = componentsAlive[i]?.First;
 
                 while (component != null) {
                     if (component.Visible && component.Entity.Visible)

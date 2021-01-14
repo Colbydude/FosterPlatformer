@@ -47,7 +47,7 @@ namespace FosterPlatformer
             App.Window.OnRender += Render;
 
             world = new World();
-            world.game = this;
+            world.Game = this;
 
             // Load content.
             Content.Load();
@@ -149,9 +149,9 @@ namespace FosterPlatformer
                         // @TODO: Remaining entities.
 
                         // Ghost Frog.
-                        // case 0x76428a:
-                        //     Factory.GhostFrog(world, worldPosition + new Point2(-4, 0));
-                        // break;
+                        case 0x76428a:
+                            Factory.GhostFrog(world, worldPosition + new Point2(-4, 0));
+                        break;
                     }
                 }
             }
@@ -228,7 +228,7 @@ namespace FosterPlatformer
 
                         // See if room exists.
                         if (player.Health > 0 && Content.FindRoom(nextRoom) != null && nextRoom.X >= Room.X) {
-                            // Time.PauseFor(0.1f);
+                            Time.PauseFor(0.1f);
 
                             // Transition to it!
                             transition = true;
@@ -307,7 +307,7 @@ namespace FosterPlatformer
                             world.DestroyEntity(it);
                     }
 
-                    // Time.PauseFor(0.1f);
+                    Time.PauseFor(0.1f);
                     transition = false;
                 }
             }

@@ -225,7 +225,7 @@ namespace FosterPlatformer.Components
                 var hit = hitbox.First(Mask.Enemy, new Point2(0, 0));
 
                 if (hit != null) {
-                    // Time.PauseFor(0.1f); ??
+                    Time.PauseFor(0.1f);
                     anim.Play("hurt");
 
                     if (attackCollider != null) {
@@ -240,7 +240,15 @@ namespace FosterPlatformer.Components
                     invincibleTimer = invincibleDuration;
                     state = ST_HURT;
 
-                    // @TODO ORB
+                    // hack:
+                    // destroy orb
+                    // ideally we would have an "attack" component that the orb could
+                    // subscribe to, and delete itself when it hits the player. since
+                    // the orb currently has no way to know if it hit the player, we
+                    // have to add this ugly hack!
+                    var orb = hit.Get<Orb>();
+                    if (orb != null)
+                        hit.Entity.Destroy();
                 }
             }
         }

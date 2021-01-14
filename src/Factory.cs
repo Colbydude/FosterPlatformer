@@ -84,8 +84,8 @@ namespace FosterPlatformer
             mover.Collider = hitbox;
             mover.Gravity = 0;
             mover.Friction = 100;
-            // mover.OnHitX += (Mover self) => { self.Get<GhostFrog>().OnHitX(self); };
-            // mover.OnHitY += (Mover self) => { self.Get<GhostFrog>().OnHitY(self); };
+            mover.OnHitX += (Mover self) => { self.Get<GhostFrog>().OnHitX(self); };
+            mover.OnHitY += (Mover self) => { self.Get<GhostFrog>().OnHitY(self); };
 
             var hurtable = en.Add<Hurtable>(new Hurtable());
             hurtable.HurtBy = Mask.PlayerAttack;

@@ -14,13 +14,12 @@ namespace FosterPlatformer
 
             public static int Count()
             {
-                return TypeMap.Count;
+                return counter;
             }
 
             public static int Id<T>()
             {
-                if (TypeMap.ContainsKey(typeof(T)))
-                {
+                if (TypeMap.ContainsKey(typeof(T))) {
                     return TypeMap[typeof(T)];
                 }
 

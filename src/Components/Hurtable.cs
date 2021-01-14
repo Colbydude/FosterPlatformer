@@ -18,7 +18,7 @@ namespace FosterPlatformer.Components
 
         public void Hurt()
         {
-            // Time.PauseFor(0.1f); ??
+            Time.PauseFor(0.1f);
             StunTimer = 0.5f;
             FlickerTimer = 0.5f;
             OnHurt(this);
