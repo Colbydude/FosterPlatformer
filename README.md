@@ -6,6 +6,7 @@ C# port of [tiny_link](https://github.com/NoelFB/tiny_link) for the purpose of p
 ## Running:
 - **Requirements:** [.NET 5.0](https://dotnet.microsoft.com/download/dotnet/5.0) and [C# 8.0](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-8)
 - Clone the repo.
+- `git submodule init` & `git submodule update`
 - `dotnet run -p src`
 
 ## Known Issues:
