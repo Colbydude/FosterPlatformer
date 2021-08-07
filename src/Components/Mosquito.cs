@@ -25,7 +25,7 @@ namespace FosterPlatformer.Components
                 if (Math.Abs(mover.Speed.X) > 50)
                     mover.Speed.X = Calc.Approach(mover.Speed.X, Math.Sign(mover.Speed.X) * 50, 800 * Time.Delta);
 
-                mover.Speed.Y = (int) Math.Sin(timer) * 10;
+                mover.Speed.Y = (int) (Math.Sin(timer) * 10);
             }
 
             timer += Time.Delta * 4;

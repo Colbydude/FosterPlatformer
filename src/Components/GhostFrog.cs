@@ -231,7 +231,7 @@ namespace FosterPlatformer.Components
             }
 
             if (state == ST_FLOATING || state == ST_SHOOT || state == ST_REFLECT) {
-                anim.Offset.Y = (int) Math.Sin(Time.FixedDuration.TotalMilliseconds * 2f) * 3; // @TODO Revisit?
+                anim.Offset.Y = (int) (Math.Sin(Time.Duration.TotalSeconds * 2f) * 3);
             }
 
             lastPos = Entity.Position;
